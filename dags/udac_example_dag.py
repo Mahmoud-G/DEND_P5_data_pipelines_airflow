@@ -3,7 +3,7 @@ import os
 from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators import (StageToRedshiftOperator, LoadFactOperator,
-                                LoadDimensionOperator, DataQualityOperator)
+                               LoadDimensionOperator, DataQualityOperator)
 from helpers import SqlQueries
 
 default_args = {
@@ -20,9 +20,9 @@ dag = DAG('udac_example_dag',
           default_args=default_args,
           description='Load and transform data in Redshift with Airflow',
           schedule_interval='0 * * * *'
-        )
+          )
 
-start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
+start_operator = DummyOperator(task_id='Begin_execution', dag=dag)
 
 stage_events_to_redshift = StageToRedshiftOperator(
     task_id='Stage_events',
@@ -81,11 +81,11 @@ load_time_dimension_table = LoadDimensionOperator(
 
 run_quality_checks = DataQualityOperator(
     task_id='Run_data_quality_checks',
-    dag=dag
+    dag=dag,
+    table_list=['time', 'artists', 'songs', 'songplays', ]
 )
 
-end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
-
+end_operator = DummyOperator(task_id='Stop_execution', dag=dag)
 
 start_operator >> stage_events_to_redshift
 start_operator >> stage_songs_to_redshift
